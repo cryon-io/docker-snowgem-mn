@@ -1,0 +1,10 @@
+{
+    "version" : 0.15,
+    "update-node": "tools/update-node.sh",
+    "fs-permissions": "tools/fs-permissions.sh",
+    "node-info": "tools/node-info.sh",
+    "set-param": "tools/set-param.sh",
+    "before-start": "tools/before-start.sh",
+    "cli" : "snowgem-cli",
+    "required-ans-version" : 0
+}

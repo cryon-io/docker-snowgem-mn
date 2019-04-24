@@ -1,0 +1,12 @@
+.vscode
+data/*
+!data/snowgem/
+data/snowgem/*
+!data/zcash-params/
+data/zcash-params/*
+
+!data/snowgem/snowgem.conf
+!data/snowgem/masternode.conf
+
+!data/zcash-params/.gitkeep
+docs
