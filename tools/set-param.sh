@@ -25,12 +25,27 @@ VALUE=$(echo "$1" | sed "s/[^>]*=//")
 
 case $PARAM in
     ip)
-        TEMP=$(sed "s/externalip=.*/externalip=$VALUE:16113/g" "$BASEDIR/../data/snowgem/snowgem.conf")
-        TEMP=$(printf "%s" "$TEMP" | sed "s/masternodeaddr=.*/masternodeaddr=$VALUE:16113/g")
+        case $VALUE in 
+            *:*)
+                TEMP=$(sed "s/externalip=.*/externalip=[$VALUE]:16113/g" "$BASEDIR/../data/snowgem/snowgem.conf")
+                TEMP=$(printf "%s" "$TEMP" | sed "s/masternodeaddr=.*/masternodeaddr=[$VALUE]:16113/g")
+            ;;
+            *)
+                TEMP=$(sed "s/externalip=.*/externalip=$VALUE:16113/g" "$BASEDIR/../data/snowgem/snowgem.conf")
+                TEMP=$(printf "%s" "$TEMP" | sed "s/masternodeaddr=.*/masternodeaddr=$VALUE:16113/g")
+            ;;
+        esac
         printf "%s" "$TEMP" > "$BASEDIR/../data/snowgem/snowgem.conf"
         MN_CONF_PART1=$(awk '{print $1}' "$BASEDIR/../data/snowgem/masternode.conf")
         MN_CONF_PART2=$(awk '{print $3" "$4" "$5}' "$BASEDIR/../data/snowgem/masternode.conf")
-        printf "%s %s:16113 %s" "$MN_CONF_PART1" "$VALUE" "$MN_CONF_PART2" > "$BASEDIR/../data/snowgem/masternode.conf"
+        case $VALUE in 
+            *:*)
+                printf "%s [%s]:16113 %s" "$MN_CONF_PART1" "$VALUE" "$MN_CONF_PART2" > "$BASEDIR/../data/snowgem/masternode.conf"
+            ;;
+            *)
+                printf "%s %s:16113 %s" "$MN_CONF_PART1" "$VALUE" "$MN_CONF_PART2" > "$BASEDIR/../data/snowgem/masternode.conf"
+            ;;
+        esac
     ;;
     nodeprivkey)
         TEMP=$(sed "s/masternodeprivkey=.*/masternodeprivkey=$VALUE/g" "$BASEDIR/../data/snowgem/snowgem.conf")
