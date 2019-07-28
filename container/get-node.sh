@@ -27,7 +27,7 @@ if [ -f "./limits.conf" ]; then
         
         if curl --fail -sL "https://api.github.com/repos/Snowgem/Snowgem/releases/tags/$NODE_BINARY"; then
             GIT_INFO=$(curl -sL "https://api.github.com/repos/Snowgem/Snowgem/releases/tags/$NODE_BINARY")                                       
-            URL=$(printf "%s\n" "$GIT_INFO" | jq .assets[].browser_download_url -r | grep x86_64-linux | grep -v qt)                          
+            URL=$(printf "%s\n" "$GIT_INFO" | jq .assets[].browser_download_url -r | grep ubuntu18.04)                          
         elif [ -n "$NODE_BINARY" ] && [ ! "$NODE_BINARY" = "auto" ]; then
             URL=$NODE_BINARY
         fi
