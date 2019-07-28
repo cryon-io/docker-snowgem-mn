@@ -28,11 +28,17 @@ else
     [ -z "$mn_status" ] && mn_status=$(/home/snowgem/snowgem-cli masternode debug)
 fi
 
-block_count="$(/home/snowgem/snowgem-cli getblockchaininfo 2>&1)"
-if printf "%s" "$block_count" | grep "error message"; then 
-    block_count=$(printf "%s" "$block_count" | tail -n 1)   
+blockchaininfo="$(/home/snowgem/snowgem-cli getblockchaininfo 2>&1)"
+if printf "%s" "$blockchaininfo" | grep "error message"; then 
+    block_count=$(printf "%s" "$blockchaininfo" | tail -n 1)   
 else 
-    block_count="$(printf "%s" "$block_count" | jq .blocks)"
+    block_count="$(printf "%s" "$blockchaininfo" | jq .blocks -r)"
+fi
+
+if printf "%s" "$blockchaininfo" | grep "error:"; then 
+    block_hash=$(printf "%s" "$blockchaininfo" | sed 's\error: \\g' | jq .message)   
+else 
+    block_hash="$(printf "%s" "$blockchaininfo" | jq .bestblockhash -r)"
 fi
 
 sync_status="$(/home/snowgem/snowgem-cli getblocktemplate 2>&1)"
@@ -42,18 +48,31 @@ else
     sync_status=true
 fi
 
-printf "\
-TYPE: %s
-VERSION: %s
-MN STATUS: %s
-BLOCKS: %s
-SYNCED: %s
-" "$type" "$ver" "$mn_status" "$block_count" "$sync_status"> /home/snowgem/.snowgem/node.info
+case "$mn_status" in
+    *"Masternode successfully started"*)
+        mn_status_level="ok"
+    ;;
+    *)
+        mn_status_level="error"
+    ;;
+esac
 
 printf "\
 TYPE: %s
 VERSION: %s
 MN STATUS: %s
+MN STATUS LEVEL: %s
 BLOCKS: %s
+BLOCK_HASH: %s
 SYNCED: %s
-" "$type" "$ver" "$mn_status" "$block_count" "$sync_status"
+" "$type" "$ver" "$mn_status" "$mn_status_level" "$block_count" "$block_hash" "$sync_status"> /home/snowgem/.snowgem/node.info
+
+printf "\
+TYPE: %s
+VERSION: %s
+MN STATUS: %s
+MN STATUS LEVEL: %s
+BLOCKS: %s
+BLOCK_HASH: %s
+SYNCED: %s
+" "$type" "$ver" "$mn_status" "$mn_status_level" "$block_count" "$block_hash" "$sync_status"

@@ -28,6 +28,11 @@ services:
       - AUTOHEAL_DELAY=30
       - AUTOHEAL_INTERVAL=5
       - STOP_TIMEOUT=120
+    logging:
+      options:
+        max-size: '5m'
+        max-file: '1'
+      driver: json-file
 
   mn:
     restart: always
@@ -42,3 +47,8 @@ services:
       - autoheal=true
     ports:
       - "16113:16113"
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '4'
+      driver: json-file
